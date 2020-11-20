@@ -62,6 +62,48 @@ exports.login = catchAsync(async (req, res, next) => {
   //3.) if everything ok , then send token to client
   createSendToken(user, 200, res);
 });
+
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedOut', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    status: 'success',
+  });
+};
+
+//Only for rendered pages. No errors
+exports.isLoggedIn = async (req, res, next) => {
+  try {
+    //1. check cookies.jwt if it's there
+    if (req.cookies.jwt) {
+      //2. Verification of cookie
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
+
+      //3. check if user stil exist
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) {
+        return next();
+      }
+
+      //4. check if user changed password after the token was issued
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+      // There is a logged in User
+      res.locals.user = currentUser;
+      return next();
+    }
+  } catch (err) {
+    return next();
+  }
+  next();
+};
+
 exports.protect = catchAsync(async (req, res, next) => {
   //1. getting token and check if it's there
   let token;
@@ -70,6 +112,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
   if (!token) {
     return next(
