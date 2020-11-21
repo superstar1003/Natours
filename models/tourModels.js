@@ -157,11 +157,11 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 tourSchema.post(/^find/, function (docs, next) {
-  console.log(
-    `the time taken from pre to post middleware is ${
-      Date.now() - this.start
-    } milliseconds`
-  );
+  // // console.log(
+  // //   `the time taken from pre to post middleware is ${
+  // //     Date.now() - this.start
+  // //   } milliseconds`
+  // );
   //console.log(docs);
   next();
 });

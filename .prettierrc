@@ -1,4 +1,5 @@
 {
   "singleQuote": true,
-  "printText" : 80
+  "printText": 80,
+  "tabWidth": 2
 }

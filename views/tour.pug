@@ -1,10 +1,8 @@
 extends base
 include _reviewCard
 
-block append head
-  script(src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js')
-  link(href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' )
-
+//-block append head
+  
 mixin overviewBox(label, text, icon) 
   .overview-box__detail
     svg.overview-box__icon
@@ -59,9 +57,10 @@ block content
 
     .description-box
       h2.heading-secondary.ma-bt-lg= `About ${tour.name}`
-      -const paragraphs= tour.description.split('/n')
+      -const paragraphs= tour.description.split('\n')
       each p in paragraphs
-        p.description__text= p
+        p.description__text= p        
+        //-p.description__text is paragraph tag and class respectively
 
   section.section-pictures
     each img, i in tour.images

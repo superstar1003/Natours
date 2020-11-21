@@ -35,14 +35,13 @@ const sendErrorDev = (err, req, res) => {
       message: err.message,
       stack: err.stack,
     });
-  } 
-    //RENDERED WEBSITE
-    console.error('ERROR', err);
-    return res.status(err.statusCode).render('error', {
-      title: 'Something went wrong!',
-      msg: err.message,
-    });
-  
+  }
+  //RENDERED WEBSITE
+  console.error('ERROR', err);
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: err.message,
+  });
 };
 
 //PRODUCTION MODE
@@ -70,26 +69,31 @@ const sendErrorProd = (err, req, res) => {
     });
   }
   //RENDERED WEBSITE
-    //Operational :  trusted error send message to client
-   if (err.Operational) {
-     console.log(err);
-    return  res.status(err.statusCode).render('error',{
-      title: 'Something went wrong',
-      message: err.message,
-    });
+  //Operational :  trusted error send message to client
+  if (err.Operational) {
+    console.log(err.message);
+    return res
+      .status(err.statusCode)
+      .set(
+        'Content-Security-Policy',
+        "default-src 'self' https://*.mapbox.com ;base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src https://cdnjs.cloudflare.com https://api.mapbox.com 'self' blob: ;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests;"
+      )
+      .render('error', {
+        title: 'Something went wrong',
+        msg: err.message,
+      });
   }
   //Programming or other unknown error : don't leak error details
-  
-    //1.) log Error
-    console.error('ERROR', err);
 
-    //2.) Send generic message
+  //1.) log Error
+  console.error('ERROR', err);
 
-    return res.status(err.statusCode).render('error', {
-      title: 'Something went wrong',
-      msg: 'Please try again later.',
-    });
-  
+  //2.) Send generic message
+
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong',
+    msg: 'Please try again later.',
+  });
 };
 
 module.exports = (err, req, res, next) => {
@@ -101,8 +105,7 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
-    let error = Object.assign(err);
-    error.message = err.message;
+    let error = Object.assign(err); // error = {... err }
     // console.log('ERROR:'error);
     //console.log('error.name:', error.name);
     if (error.name === 'CastError') error = handleCasteErrorDB(error);
@@ -114,7 +117,6 @@ module.exports = (err, req, res, next) => {
     if (error.name === 'JsonWebTokenError') error = handleJWTError();
     if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
 
-    
     sendErrorProd(error, req, res);
   }
 };
