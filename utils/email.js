@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const pug = require('pug');
 const htmlToText = require('html-to-text');
-const mailgun = require('nodemailer-mailgun-transport');
+//const mailgun = require('nodemailer-mailgun-transport');
 
 //new Email(user, url).sendWelcome()
 
@@ -10,35 +10,17 @@ module.exports = class Email {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
     this.url = url;
-    this.from = 'Subhash Chandra <process.env.EMAIL_FORM';
+    this.from = `Subhash Chandra <${process.env.EMAIL_FROM}>`;
   }
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      //Sendgrid
-      var stmpConfig = {
-        // host: process.env.SMTP_HOST,
-        // port: process.env.SMTP_PORT,
-        // secure: false,
+      return nodemailer.createTransport({
         service: 'Mailgun',
         auth: {
-          user: process.env.SMTP_USERNAME,
-          pass: process.env.SMTP_PASSWORD,
-          // clientId: '',
-          // clientSecret: '',
-          // refreshToken: '',
-          // accessToken: '',
+          user: process.env.MAILGUN_USERNAME,
+          pass: process.env.MAILGUN_PASSWORD,
         },
-      };
-      return nodemailer.createTransport(stmpConfig);
-      // mailgun({
-      //   auth: {
-      //     api_key: '6277e1565c38b65c225ba186bce77979-360a0b2c-0e6160a6',
-      //     domain: 'sandbox454e36cf80f14cb3a31986db06d74590.mailgun.org',
-      //   },
-      //   //proxy: 'http://127.0.0.1:8000',
-      // })
-
-      // {
+      });
     }
 
     return nodemailer.createTransport({
@@ -70,7 +52,10 @@ module.exports = class Email {
 
     //3. Create a transport and send email
 
-    await this.newTransport().sendMail(mailOptions);
+    await this.newTransport().sendMail(mailOptions, function (err, response) {
+      if (err) console.log(err);
+      if (response) console.log(response);
+    });
   }
   async sendWelcome() {
     await this.send('welcome', 'Welcome to the natours family!');

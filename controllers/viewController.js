@@ -34,6 +34,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
 
   //-3) Build the template
   //-4) Render the template using the data from 1)
+
   res
     .status(200)
     .set(
