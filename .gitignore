@@ -1,7 +1,7 @@
 node_modules/
 .DS_Store/config.env/
 .DS_Store
-config.env
+
 .env
 .DS_Store/
 .cache/
