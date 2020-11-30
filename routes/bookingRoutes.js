@@ -23,3 +23,4 @@ router
   .delete(bookingController.deleteBooking);
 
 module.exports = router;
+

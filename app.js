@@ -7,6 +7,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const csp = require('express-csp');
 const compression = require('compression');
 const cors = require('cors');
@@ -16,9 +17,11 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
+const bookingController = require('./controllers/bookingController');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const viewRouter = require('./routes/viewRoutes');
+const { json } = require('express');
 
 //app.enable('trust proxy');
 app.set('view engine', 'pug');
@@ -121,6 +124,12 @@ const limiter = rateLimit({
   message: 'To many request from this IP, please try again later',
 });
 app.use('/api', limiter);
+
+app.post(
+  '/webhookcheckout',
+  bodyParser.raw({ type: 'application / json' }),
+  bookingController.webhookCheckout
+);
 
 //Body Parser,  reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
