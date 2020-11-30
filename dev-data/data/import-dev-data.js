@@ -40,7 +40,7 @@ const importData = async () => {
     await Review.create(reviews);
     console.log('Data has been successfully created');
   } catch (err) {
-    console.log(err);
+    //console.log(err);
   }
   process.exit();
 };
@@ -53,7 +53,7 @@ const deleteData = async () => {
     await Review.deleteMany();
     console.log('the Data is successfully deleted');
   } catch (err) {
-    console.log(err);
+    //console.log(err);
   }
   process.exit();
 };
