@@ -9,6 +9,7 @@ const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const csp = require('express-csp');
 const compression = require('compression');
+const cors = require('cors');
 
 const app = express();
 const tourRouter = require('./routes/tourRoutes');
@@ -29,6 +30,17 @@ app.use(express.static(path.join(__dirname, `public`)));
 app.use(express.static(path.join(__dirname, `dist`)));
 
 //Set Security HTTP headers
+//Implementing CORS
+app.use(cors()); //only work for simple request get and post for non simple request we have to use option
+//ACcess control allow origin to *
+//api.natours.com,  natours.com
+// app.use(
+//   cors({
+//     origin: 'https://www.natours.com',
+//   })
+// );
+app.options('*', cors()); //every non simple request
+//app.options('api/v1/tours/:id', cors()); //providing to a particular route
 // app.use(helmet());
 //app.use(helmet({ contentSecurityPolicy: false }));
 app.use(helmet());
@@ -87,7 +99,7 @@ csp.extend(app, {
         'unsafe-inline',
         'data:',
         'blob:',
-        //'wss://floating-river-.herokuapp.com:/',
+        //'wss://natours-subhash.herokuapp.com:15802/',
         'https://*.stripe.com',
         'https://*.mapbox.com',
         'https://*.cloudflare.com/',
