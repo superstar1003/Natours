@@ -126,7 +126,7 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 app.post(
-  '/webhookcheckout',
+  '/webhook-checkout',
   bodyParser.raw({ type: 'application / json' }),
   bookingController.webhookCheckout
 );
