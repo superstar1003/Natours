@@ -5,6 +5,7 @@ const Tour = require('../models/tourModels');
 const User = require('../models/userModels');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
+//const webhookRawBody = require('raw-body');
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   //!.)Get the currentlty booked tour
@@ -61,7 +62,7 @@ exports.webhookCheckout = (req, res, next) => {
   let event;
   try {
     event = stripe.webhooks.constructEvent(
-      req.body,
+      webhookRawBody,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
